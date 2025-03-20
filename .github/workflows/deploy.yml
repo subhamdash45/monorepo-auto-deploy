@@ -32,12 +32,8 @@ jobs:
 
             echo "Installing dependencies..."
             cd my-turborepo
-
-            if ! command -v pnpm &> /dev/null; then
-              echo "pnpm not found, installing it..."
-              npm install -g pnpm
-            fi
-
+            export PATH=/home/ubuntu/.nvm/versions/node/v23.10.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+            npm install -g pnpm
             pnpm install
 
             echo "Building apps..."
