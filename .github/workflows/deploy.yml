@@ -1,0 +1,43 @@
+name: Deploy Turborepo Apps to EC2 on Merge
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup SSH key
+        run: |
+          echo "${{ secrets.EC2_KEY }}" > ec2_key.pem
+          chmod 600 ec2_key.pem
+
+      - name: Deploy on EC2
+        env:
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
+            set -e
+
+            echo "Navigating to project directory..."
+            cd /home/$EC2_USER/monorepo-auto-deploy
+
+            echo "Fetching latest code..."
+            git checkout main
+            git pull origin main
+
+            echo "Installing dependencies..."
+            cd my-turborepo
+            pnpm install
+
+            echo "Building apps..."
+            cd apps
+            pnpm run build
+
+            echo "Restart all apps..."
+            pm2 restart all
+          EOF
