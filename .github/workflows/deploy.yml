@@ -20,7 +20,7 @@ jobs:
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
-          ssh -T -o StrictHostKeyChecking=no -i ec2_key.pem $EC2_USER@$EC2_HOST << EOF
+          ssh -tt -o StrictHostKeyChecking=no -i ec2_key.pem $EC2_USER@$EC2_HOST << EOF
             set -e
 
             echo "Navigating to project directory..."
@@ -32,6 +32,17 @@ jobs:
 
             echo "Installing dependencies..."
             cd my-turborepo
+
+            # Fix for pnpm not found in non-login shell
+            export PATH="$HOME/.local/share/pnpm:$PATH"
+
+            if ! command -v pnpm &> /dev/null
+            then
+              echo "pnpm not found, installing it..."
+              corepack enable
+              corepack prepare pnpm@latest --activate
+            fi
+
             pnpm install
 
             echo "Building apps..."
