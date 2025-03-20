@@ -32,7 +32,7 @@ jobs:
 
             echo "Installing dependencies..."
             cd my-turborepo
-            export PATH=/home/ubuntu/.nvm/versions/node/v23.10.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+            export PATH=/home/ubuntu/.nvm/versions/node/v23.10.0/bin
             npm install -g pnpm
             pnpm install
 
